@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construction Career Guide</title>
+    <!-- Tailwind CSS CDN for sleek styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Playfair Display -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative; /* Needed for absolute positioning of pseudo-element */
+            overflow-y: auto; /* Changed from hidden to auto to allow vertical scrolling */
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+            transition: all 0.3s ease-in-out;
+            position: relative;
+            z-index: 1;
+        }
+        .input-group label {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 0.875rem;
+        }
+        .input-group select,
+        .input-group input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #333;
+            background-color: #f9f9f9;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .input-group select:focus,
+        .input-group input[type="text"]:focus {
+            outline: none;
+            border-color: #007aff;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+        }
+        .submit-btn {
+            background-color: #007aff;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3);
+        }
+        .submit-btn:hover {
+            background-color: #005bb5;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3);
+        }
+        .submit-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3);
+        }
+        .job-item {
+            background-color: #f8f8f8;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+            position: relative; /* For tooltip positioning */
+        }
+        .job-item:hover {
+            background-color: #eef7ff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+        }
+        .job-item h3 {
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 5px;
+        }
+        .job-item p {
+            font-size: 14px;
+            color: #555;
+        }
+        .tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.5;
+            z-index: 100;
+            max-width: 300px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            pointer-events: none; /* Allows clicks to pass through to elements behind it */
+            left: calc(100% + 10px); /* Adjusted positioning */
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .job-item:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            .card {
+                padding: 20px;
+            }
+            .input-group {
+                margin-bottom: 15px;
+            }
+            .tooltip {
+                left: 0;
+                top: auto;
+                bottom: 105%; /* Position above on small screens */
+                transform: translateX(0);
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="card">
+        <!-- New Title and Introduction -->
+        <h1 class="text-3xl font-extrabold text-center text-blue-800 mb-2" style="font-family: 'Playfair Display', serif;">Opportunities waiting for you!</h1>
+        <p class="text-md text-center text-blue-800 mb-6" style="font-family: 'Playfair Display', serif;">Let us first know your specialty.</p>
+
+        <div class="space-y-6 mb-8">
+            <div class="input-group">
+                <label for="qualificationLevel" class="text-sm font-semibold text-indigo-600">Select Qualification Level:</label>
+                <select id="qualificationLevel" class="block w-full">
+                    <option value="">-- Select Level --</option>
+                    <option value="Certificate">Certificate</option>
+                    <option value="Diploma">Diploma</option>
+                    <option value="Technician">Technician</option>
+                    <option value="Degree">Degree</option>
+                    <option value="Higher Diploma">Higher Diploma</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="courseName" class="text-sm font-semibold text-indigo-600">Enter Your Course Name:</label>
+                <input type="text" id="courseName" placeholder="e.g., Civil Engineering, Architecture, Quantity Surveying">
+            </div>
+
+            <button id="submitBtn" class="submit-btn w-full">Find Jobs</button>
+        </div>
+
+        <div id="results" class="mt-8">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4" style="font-family: 'Playfair Display', serif;">You can apply for these jobs:</h2>
+            <div id="jobList" class="space-y-4">
+                <!-- Removed initial message content as requested -->
+                <p class="text-gray-500 text-center" id="initialMessage"></p>
+            </div>
+        </div>
+
+        <!-- New Contact and Movement Section -->
+        <div class="mt-10 text-center text-gray-700">
+            <p class="mb-2">Any challenge? <a href="https://wa.me/254102093870" class="text-blue-600 hover:underline font-medium">Whatsap</a> or <a href="mailto:buildersunitedke@gmail.com" class="text-blue-600 hover:underline font-medium">email now</a></p>
+            <p class="mt-4 text-md font-semibold">MISSED THE DEADLINE? <a href="https://sites.google.com/d/1d-yfXv38ngv2G48bn9-cW35WulOmJJX3/p/1CL9vI1Uc9Gqs3iP1Uf8TLcDP7imaLH9H/edit" class="text-blue-600 hover:underline">Join the Movement to be always ahead of the Game</a></p>
+        </div>
+    </div>
+
+    <script>
+        // --- Job Data ---
+        // This data has been meticulously extracted and structured from the provided PDF.
+        // Each object represents a job, with details for matching and display.
+        const jobData = [
+            {
+                title: "ASSISTANT ENGINEER II (IRRIGATION)",
+                levels: ["Degree"],
+                courses: ["Agricultural Engineering", "Agricultural and Bio-Systems Engineering", "Soil Water and Environmental Engineering", "Environmental and Bio-Systems Engineering", "Biomechanical and Processing Engineering", "Soil and Water Engineering"],
+                posts: "7 vacancies",
+                salaryMax: 57230,
+                allowanceMax: 16500 + 5000,
+                experienceReq: "No experience required (Graduate Engineer)",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "IRRIGATION WATER MANAGEMENT OFFICER II",
+                levels: ["Degree"],
+                courses: ["Agriculture", "Horticulture", "Agronomy", "Agricultural Economics", "Agribusiness", "Agricultural Resource Management"],
+                posts: "1 vacancy",
+                salaryMax: 46120,
+                allowanceMax: 10000 + 4000,
+                experienceReq: "No experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "LAND RECLAMATION OFFICER II",
+                levels: ["Degree"],
+                courses: ["Natural Resource Management", "Geography", "Economics", "Community Development", "Environmental Science"],
+                posts: "1 vacancy",
+                salaryMax: 46120,
+                allowanceMax: 10000 + 4000,
+                experienceReq: "No experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "IRRIGATION DEVELOPMENT CO-ORDINATION OFFICER II",
+                levels: ["Degree"],
+                courses: ["Agri Economics", "General Agriculture", "Economics", "Commerce", "Agri Business", "Agricultural Engineering", "Water Resource Management", "Agricultural and Bio-systems Engineering", "Soil Water and Environmental Engineering", "Environmental and Bio-systems Engineering", "Biomechanical and Processing Processing", "Soil and Water Engineering"],
+                posts: "1 vacancy",
+                salaryMax: 46120,
+                allowanceMax: 10000 + 4000,
+                experienceReq: "No experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "ASSISTANT IRRIGATION QUALITY ASSURANCE AND LICENCING OFFICER III",
+                levels: ["Diploma", "Degree"],
+                courses: ["Range Management", "Water Resource Management", "Irrigation", "Agriculture", "Environmental Resource Management", "Agricultural Engineering", "Water Engineering", "Civil Engineering", "Irrigation and Drainage", "Community Development"],
+                posts: "5 vacancies",
+                salaryMax: 37100,
+                allowanceMax: 6750 + 4000,
+                experienceReq: "No experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "ASSISTANT LAND RECLAMATION OFFICER III",
+                levels: ["Diploma", "Degree"],
+                courses: ["Range Management", "Water Resource Management", "Irrigation", "Forestry", "Agriculture", "Environmental Resource Management", "Earth Science", "Agricultural Engineering", "Chemical Engineering", "Water Engineering", "Civil Engineering", "Community Development"],
+                posts: "1 vacancy",
+                salaryMax: 37100,
+                allowanceMax: 6750 + 4000,
+                experienceReq: "No experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "LAND REGISTRAR II",
+                levels: ["Degree"],
+                courses: ["Law", "Land Economics", "Land Survey"],
+                posts: "2 vacancies",
+                salaryMax: 57230,
+                allowanceMax: 16500 + 5000,
+                experienceReq: "No experience required (Graduate Engineer)",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "PHOTOLITHOGRAPHER II",
+                levels: ["Degree"],
+                courses: ["Technology in Printing", "Philosophy in Technology Printing", "Graphic Design", "Print Media"],
+                posts: "1 vacancy",
+                salaryMax: 57230,
+                allowanceMax: 16500 + 5000,
+                experienceReq: "No experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "HYDROGRAPHER II",
+                levels: ["Degree"],
+                courses: ["Geomatics Engineering and Geospatial Information Systems", "Hydrographic Survey"],
+                posts: "1 vacancy",
+                salaryMax: 57230,
+                allowanceMax: 16500 + 5000,
+                experienceReq: "No experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "PHOTOGRAMMETRIST II",
+                levels: ["Degree"],
+                courses: ["Geospatial Engineering", "Philosophy in Technology (Geo information)", "Technology in Geo-information"],
+                posts: "1 vacancy",
+                salaryMax: 57230,
+                allowanceMax: 16500 + 5000,
+                experienceReq: "No experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "LAND ADJUDICATION AND SETTLEMENT OFFICER II",
+                levels: ["Degree"],
+                courses: ["Geography", "Agriculture and Human Ecology Extension", "Agriculture and Home Economics", "Sociology", "Community Development"],
+                posts: "1 vacancy",
+                salaryMax: 46120,
+                allowanceMax: 10000 + 4000,
+                experienceReq: "No experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "LAND ADMINISTRATION ASSISTANT III",
+                levels: ["Diploma", "Certificate"],
+                courses: ["Land Administration", "Real Estate Agency"],
+                posts: "1 vacancy",
+                salaryMax: 37100,
+                allowanceMax: 6750 + 4000,
+                experienceReq: "Requires Diploma or equivalent qualification (implied flexibility for craft-level entry in practice)",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "PHYSICAL PLANNING ASSISTANT III",
+                levels: ["Diploma"],
+                courses: ["Urban and Regional Planning", "Regional Planning", "Urban Planning", "Building", "Civil Engineering", "Cartography", "Geo-informatics", "Geographical Information Systems (GIS)"],
+                posts: "1 vacancy",
+                salaryMax: 37100,
+                allowanceMax: 6750 + 4000,
+                experienceReq: "No experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "PHOTOLITHOGRAPHIC ASSISTANT III",
+                levels: ["Diploma"],
+                courses: ["Printing", "Map Reproduction"],
+                posts: "1 vacancy",
+                salaryMax: 37100,
+                allowanceMax: 6750 + 4000,
+                experienceReq: "No experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "HYDROGRAPHIC ASSISTANT III",
+                levels: ["Diploma"],
+                courses: ["Hydrographic Surveying", "Land Surveying"],
+                posts: "1 vacancy",
+                salaryMax: 37100,
+                allowanceMax: 6750 + 4000,
+                experienceReq: "No experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "PHOTOGRAMMETRY ASSISTANT III",
+                levels: ["Diploma"],
+                courses: ["Photogrammetry and Remote Sensing"],
+                posts: "1 vacancy",
+                salaryMax: 37100,
+                allowanceMax: 6750 + 4000,
+                experienceReq: "No experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "CARTOGRAPHY ASSISTANT III",
+                levels: ["Diploma"],
+                courses: ["Cartography"],
+                posts: "1 vacancy",
+                salaryMax: 37100,
+                allowanceMax: 6750 + 4000,
+                experienceReq: "No experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "GEOSPATIAL DATA MANAGEMENT ASSISTANT III",
+                levels: ["Diploma"],
+                courses: ["Archives and Records Management"],
+                posts: "1 vacancy",
+                salaryMax: 37100,
+                allowanceMax: 6750 + 4000,
+                experienceReq: "No experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "ARCHITECT",
+                levels: ["Degree"],
+                courses: ["Architecture"],
+                posts: "16 vacancies",
+                salaryMax: 65860,
+                allowanceMax: 28000 + 6000,
+                experienceReq: "No experience required (Graduate Membership)",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "LANDSCAPE ARCHITECT II",
+                levels: ["Degree"],
+                courses: ["Landscape Architecture"],
+                posts: "5 vacancies",
+                salaryMax: 57230,
+                allowanceMax: 16500 + 5000,
+                experienceReq: "No experience required (Graduate Membership)",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "ARCHITECTURAL ASSISTANT III",
+                levels: ["Diploma", "Certificate"],
+                courses: ["Building/Civil Engineering", "Architecture", "Technician Certificate Part III in Building/Civil Engineering", "Technician Certificate Part III in Architecture"],
+                posts: "15 vacancies",
+                salaryMax: 37100,
+                allowanceMax: 6750 + 4000,
+                experienceReq: "Requires Technician Certificate Part III in Building/Civil Engineering or Architecture",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "INSPECTOR (BUILDINGS)",
+                levels: ["Technician", "Certificate"],
+                courses: ["Building Technology", "Civil Engineering", "Construction Technician Part III"],
+                posts: "10 vacancies",
+                salaryMax: 37100,
+                allowanceMax: 6750 + 4000,
+                experienceReq: "Requires Construction Technician Part III",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "ENGINEER II (ELECTRICAL)",
+                levels: ["Degree"],
+                courses: ["Electrical Engineering"],
+                posts: "28 vacancies",
+                salaryMax: 57230,
+                allowanceMax: 16500 + 5000,
+                experienceReq: "No experience required (Graduate Engineer)",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "INSPECTOR ELECTRICAL (BS)",
+                levels: ["Technician", "Certificate"],
+                courses: ["Electrical Engineering", "Electrical Technician Certificate Part III"],
+                posts: "21 vacancies",
+                salaryMax: 37100,
+                allowanceMax: 6750 + 4000,
+                experienceReq: "Requires Electrical Technician Certificate Part III",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "INSPECTOR (ELECTRONICS)",
+                levels: ["Technician", "Certificate"],
+                courses: ["Electronics Engineering", "Electronics Technician Certificate Part III"],
+                posts: "10 vacancies",
+                salaryMax: 37100,
+                allowanceMax: 6750 + 4000,
+                experienceReq: "Requires Electronics Technician Certificate Part III",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "ENGINEER II (MECHANICAL - BS)",
+                levels: ["Degree"],
+                courses: ["Mechanical Engineering"],
+                posts: "25 vacancies",
+                salaryMax: 57230,
+                allowanceMax: 16500 + 5000,
+                experienceReq: "No experience required (Graduate Engineer)",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "INSPECTOR (MECHANICAL - BS)",
+                levels: ["Technician", "Certificate"],
+                courses: ["Mechanical Engineering", "Mechanical Technician Certificate part III"],
+                posts: "15 vacancies",
+                salaryMax: 37100,
+                allowanceMax: 6750 + 4000,
+                experienceReq: "Requires Mechanical Technician Certificate Part III",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "FIRE OFFICER II",
+                levels: ["Degree"],
+                courses: ["Electrical Engineering", "Mechanical Engineering", "Chemical Engineering", "Mechatronics Engineering"],
+                posts: "4 vacancies",
+                salaryMax: 57230,
+                allowanceMax: 16500 + 5000,
+                experienceReq: "No experience required (Graduate Engineer)",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "INSPECTOR II (FIRE SERVICES)",
+                levels: ["Diploma", "Certificate"],
+                courses: ["Mechanical Engineering", "Electrical Engineering", "Chemical Engineering", "First Aid Certificate"],
+                posts: "10 vacancies",
+                salaryMax: 37100,
+                allowanceMax: 6750 + 4000,
+                experienceReq: "Requires Diploma or equivalent qualification (plus First Aid Certificate)",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "QUANTITY SURVEYOR II",
+                levels: ["Degree"],
+                courses: ["Building Economics", "Quantity Surveying"],
+                posts: "27 vacancies",
+                salaryMax: 57230,
+                allowanceMax: 16500 + 5000,
+                experienceReq: "No experience required (Graduate Membership)",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "QUANTITY SURVEY ASSISTANT III",
+                levels: ["Diploma", "Certificate"],
+                courses: ["Quantity Survey", "Building/Civil Engineering"],
+                posts: "20 vacancies",
+                salaryMax: 37100,
+                allowanceMax: 6750 + 4000,
+                experienceReq: "Requires Diploma or equivalent qualification (may include technician equivalent qualification)",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "ENGINEER II (STRUCTURAL)",
+                levels: ["Degree"],
+                courses: ["Civil Engineering"],
+                posts: "28 vacancies",
+                salaryMax: 57230,
+                allowanceMax: 16500 + 5000,
+                experienceReq: "No experience required (Graduate Engineer)",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "STRUCTURAL ASSISTANT III",
+                levels: ["Diploma", "Certificate"],
+                courses: ["Civil Engineering", "Building", "Construction Technician Certificate Part III"],
+                posts: "18 vacancies",
+                salaryMax: 37100,
+                allowanceMax: 6750 + 4000,
+                experienceReq: "Requires Diploma or equivalent qualification (Construction Technician Certificate Part III or equivalent)",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "DESIGNER II",
+                levels: ["Degree"],
+                courses: ["Interior Design"],
+                posts: "12 vacancies",
+                salaryMax: 57230,
+                allowanceMax: 16500 + 5000,
+                experienceReq: "No experience required (Registered with Association)",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "DESIGN ASSISTANT III",
+                levels: ["Diploma"],
+                courses: ["Interior Design"],
+                posts: "6 vacancies",
+                salaryMax: 37100,
+                allowanceMax: 6750 + 4000,
+                experienceReq: "No experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "RESEARCH OFFICER",
+                levels: ["Degree"],
+                courses: ["Construction/Project Management", "Architecture", "Economics", "Building Economics", "Quantity Surveying", "Urban Planning", "Statistics", "Sociology", "Geography"],
+                posts: "2 vacancies",
+                salaryMax: 57230,
+                allowanceMax: 16500 + 5000,
+                experienceReq: "No experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "CHIEF BUILDING INSPECTION AND AUDIT OFFICER",
+                levels: ["Degree"],
+                courses: ["Architecture", "Mechanical Engineering", "Structural Engineering", "Electrical Engineering", "Civil Engineering", "Quantity Survey", "Design", "Urban and Regional Planning", "Building Economics", "Construction Management"],
+                posts: "5 vacancies",
+                salaryMax: 65860,
+                allowanceMax: 28000 + 6000,
+                experienceReq: "Experience required (Member of professional body)",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "SENIOR BUILDING SAFETY, TESTING & QUALITY ASSURANCE OFFICER",
+                levels: ["Degree"],
+                courses: ["Architecture", "Mechanical Engineering", "Structural Engineering", "Electrical Engineering", "Civil Engineering", "Quantity Survey", "Design", "Building Economics", "Construction Management"],
+                posts: "3 vacancies",
+                salaryMax: 65860,
+                allowanceMax: 28000 + 6000,
+                experienceReq: "Experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "ENFORCEMENT OFFICER",
+                levels: ["Degree"],
+                courses: ["Public Policy and Administration", "Security", "Law", "Sociology", "Anthropology", "Construction Management"],
+                posts: "2 vacancies",
+                salaryMax: 57230,
+                allowanceMax: 16500 + 5000,
+                experienceReq: "Experience required (Member of professional body)",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "MECHANICAL ENGINEER II (MECHANICAL AND TRANSPORT)",
+                levels: ["Degree"],
+                courses: ["Mechanical Engineering", "Mechanical & Production Engineering", "Mechatronics Engineering", "Mechanical & Industrial Engineering", "Mechanical & Manufacturing Engineering"],
+                posts: "7 vacancies",
+                salaryMax: 57230,
+                allowanceMax: 16500 + 5000,
+                experienceReq: "No experience required (Graduate Engineer)",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "LECTURER II (KIHBT)",
+                levels: ["Degree"],
+                courses: ["Civil Engineering", "Electrical/Electronic Engineering", "Mechanical Engineering", "Geospatial Engineering", "Quantity Surveying", "Mechatronics Engineering", "Architecture", "Construction Management"],
+                posts: "14 vacancies",
+                salaryMax: 57230,
+                allowanceMax: 16500 + 5000,
+                experienceReq: "No experience required (Graduate)",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "INSTRUCTOR III (KIHBT)",
+                levels: ["Certificate", "Technician"],
+                courses: ["Electronics Engineering", "Electrical Engineering", "Mechanical Engineering", "Automotive Engineering", "Construction Plant Engineering", "Civil Engineering", "Highway Engineering", "Building Construction", "Land Surveying", "Quantity Surveying", "Architecture", "Construction Management", "Instructor Training", "Training of Trainers", "Technician II (KNEC) Certificate", "Technician III (KNEC) Certificate"],
+                posts: "15 vacancies",
+                salaryMax: 37100,
+                allowanceMax: 6750 + 4000,
+                experienceReq: "Requires Technician II and III (KNEC) Certificate",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "SENIOR PRINCIPAL LABORATORY TECHNOLOGIST",
+                levels: ["Higher Diploma"],
+                courses: ["Applied Sciences (Chemistry)", "Applied Sciences (Analytical Chemistry)", "Applied Sciences (Industrial Chemistry)", "Applied Sciences (Biology)", "Food Science and Technology", "Medical Laboratory Technology", "Building/Civil Engineering", "Earth Sciences Biotechnology", "Environmental Chemistry", "Microbiology", "Parasitology", "Hematology", "Histology and Cytology", "Construction Management"],
+                posts: "1 vacancy",
+                salaryMax: 133410,
+                allowanceMax: 45000 + 12000,
+                experienceReq: "Experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "ASSISTANT DIRECTOR LABORATORY SERVICES",
+                levels: ["Degree"],
+                courses: ["Laboratory Sciences", "Biomedical Sciences", "Medical Laboratory Technology", "Biotechnology", "Applied Biology", "Biochemistry", "Analytical/Applied Chemistry", "Microbiology", "Food Science and Technology", "Civil Engineering", "Construction Management"],
+                posts: "1 vacancy",
+                salaryMax: 133410,
+                allowanceMax: 45000 + 12000,
+                experienceReq: "Experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "SENIOR PRINCIPAL LECTURER, KISM",
+                levels: ["Degree"],
+                courses: ["Land Surveying", "Geomatics", "Geomatics Engineering", "Technology in Geomatics", "Geo-informatics", "Cartography", "Remote Sensing", "Photogrammetry", "Geographical Information Systems (GIS)", "Physics", "Chemistry", "Geography", "Mathematics", "Computer Science", "Information and Communication Technology (ICT) Entrepreneurship", "Print Media Management", "Printing Technology", "Education", "Construction Management", "Training of Trainers Certificate", "Instructor Training Certificate"],
+                posts: "1 vacancy",
+                salaryMax: 133410,
+                allowanceMax: 45000 + 12000,
+                experienceReq: "Experience required (Training of trainers Certificate)",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "Construction Technician",
+                levels: ["Technician"],
+                courses: ["Construction Technology", "Building Construction", "Construction Management"],
+                posts: "Multiple vacancies",
+                salaryMax: 35000,
+                allowanceMax: 6000 + 3000,
+                experienceReq: "No experience required",
+                deadline: "8/7/2025",
+            },
+            {
+                title: "Construction Manager",
+                levels: ["Degree"],
+                courses: ["Construction Management", "Civil Engineering", "Building Economics", "Project Management"],
+                posts: "Multiple vacancies",
+                salaryMax: 65860,
+                allowanceMax: 28000 + 6000,
+                experienceReq: "Experience required",
+                deadline: "8/7/2025",
+            }
+        ];
+
+        // --- DOM Elements ---
+        const qualificationLevelSelect = document.getElementById('qualificationLevel');
+        const courseNameInput = document.getElementById('courseName');
+        const submitBtn = document.getElementById('submitBtn');
+        const jobListDiv = document.getElementById('jobList');
+        const initialMessage = document.getElementById('initialMessage');
+
+        // --- Utility Functions ---
+
+        // Levenshtein Distance function for fuzzy matching
+        // Source: https://en.wikipedia.org/wiki/Levenshtein_distance#Iterative_with_full_matrix
+        function levenshteinDistance(s1, s2) {
+            s1 = s1.toLowerCase();
+            s2 = s2.toLowerCase();
+
+            const costs = [];
+            for (let i = 0; i <= s1.length; i++) {
+                let lastValue = i;
+                for (let j = 0; j <= s2.length; j++) {
+                    if (i === 0) {
+                        costs[j] = j;
+                    } else if (j > 0) {
+                        let newValue = costs[j - 1];
+                        if (s1.charAt(i - 1) !== s2.charAt(j - 1)) {
+                            newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+                        }
+                        costs[j - 1] = lastValue;
+                        lastValue = newValue;
+                    }
+                }
+                if (i > 0) {
+                    costs[s2.length] = lastValue;
+                }
+            }
+            return costs[s2.length];
+        }
+
+        // --- Main Logic ---
+        submitBtn.addEventListener('click', findJobs);
+
+        function findJobs() {
+            const selectedLevel = qualificationLevelSelect.value;
+            let enteredCourse = courseNameInput.value.trim().toLowerCase();
+
+            jobListDiv.innerHTML = '';
+            if (initialMessage) {
+                initialMessage.style.display = 'none'; // Keep this to hide the empty paragraph if it's there
+            }
+
+            if (!selectedLevel || !enteredCourse) {
+                jobListDiv.innerHTML = '<p class="text-red-500 text-center">Please select a qualification level and enter your course name.</p>';
+                return;
+            }
+
+            const constructionManagementSynonyms = ["management", "construction", "construction management"];
+            if (constructionManagementSynonyms.includes(enteredCourse)) {
+                enteredCourse = "construction/project management";
+            }
+
+            const primaryMatchingJobs = [];
+            const threshold = 3;
+
+            jobData.forEach(job => {
+                if (job.levels.includes(selectedLevel)) {
+                    let courseMatched = false;
+                    for (const course of job.courses) {
+                        const normalizedCourse = course.toLowerCase();
+                        if (normalizedCourse.includes(enteredCourse) || enteredCourse.includes(normalizedCourse) || levenshteinDistance(enteredCourse, normalizedCourse) <= threshold) {
+                            courseMatched = true;
+                            break;
+                        }
+                    }
+                    if (courseMatched) {
+                        primaryMatchingJobs.push(job);
+                    }
+                }
+            });
+
+            if (primaryMatchingJobs.length > 0) {
+                displayJobs(primaryMatchingJobs, false);
+            } else {
+                const closestJobs = [];
+                jobData.forEach(job => {
+                    if (job.levels.includes("Certificate") || job.levels.includes("Technician")) {
+                        let courseMatched = false;
+                        for (const course of job.courses) {
+                            const normalizedCourse = course.toLowerCase();
+                            if (normalizedCourse.includes(enteredCourse) || enteredCourse.includes(normalizedCourse) || levenshteinDistance(enteredCourse, normalizedCourse) <= 4) {
+                                courseMatched = true;
+                                break;
+                            }
+                        }
+                        if (courseMatched) {
+                            closestJobs.push(job);
+                        }
+                    }
+                });
+
+                if (closestJobs.length > 0) {
+                    displayJobs(closestJobs, true);
+                } else {
+                    jobListDiv.innerHTML = '<p class="text-gray-500 text-center">No jobs found for your criteria. Try a different course or qualification level.</p>';
+                }
+            }
+        }
+
+        function displayJobs(jobs, isClosestMatch) {
+            if (jobs.length === 0) {
+                jobListDiv.innerHTML = '<p class="text-gray-500 text-center">No jobs found for your criteria. Try a different course or qualification level.</p>';
+                return;
+            }
+
+            jobListDiv.innerHTML = '';
+            if (isClosestMatch) {
+                jobListDiv.innerHTML += '<p class="text-gray-700 text-center mb-4">No direct matches found. Here are some closest jobs you can try:</p>';
+            }
+
+            const specificRequirementTitles = [
+                "INSPECTOR (BUILDINGS)",
+                "INSPECTOR ELECTRICAL (BS)",
+                "INSPECTOR (MECHANICAL - BS)",
+                "INSPECTOR (ELECTRONICS)",
+                "INSPECTOR II (FIRE SERVICES)",
+                "ARCHITECTURAL ASSISTANT III",
+                "STRUCTURAL ASSISTANT III",
+                "QUANTITY SURVEY ASSISTANT III",
+                "INSTRUCTOR III (KIHBT)",
+                "LAND ADMINISTRATION ASSISTANT III"
+            ];
+
+            jobs.forEach(job => {
+                const jobItem = document.createElement('div');
+                jobItem.className = 'job-item';
+
+                let postsFormatted = '';
+                if (job.posts !== "Not specified" && job.posts !== "Multiple vacancies") {
+                    postsFormatted = job.posts.replace(/(\d+)/g, '<span class="font-bold text-lime-300">$1</span>');
+                    postsFormatted = postsFormatted.replace('vacancies', 'vacancies, ');
+                } else if (job.posts === "Multiple vacancies") {
+                    postsFormatted = `<span class="font-bold text-lime-300">Multiple vacancies</span>, `;
+                } else {
+                    postsFormatted = `Not specified, `;
+                }
+
+                let qualificationDisplay = '';
+                if (specificRequirementTitles.includes(job.title)) {
+                    // Display the experienceReq directly for specified titles
+                    qualificationDisplay = job.experienceReq;
+                } else {
+                    // For other jobs, display "Qualification: [Level(s)]"
+                    qualificationDisplay = `Qualification: ${job.levels.join(', ')}`;
+                }
+
+                let conciseSummary = `
+                    ${postsFormatted}
+                    <span class="font-bold text-lime-300">Salary:</span> upto Kshs. ${job.salaryMax.toLocaleString()} pm,
+                    <span class="font-bold text-lime-300">Allowance:</span> upto Ksh ${job.allowanceMax.toLocaleString()} pm,
+                    <span class="font-bold text-lime-300">Experience:</span> ${job.experienceReq},
+                    <span class="font-bold text-lime-300">Deadline:</span> ${job.deadline},
+                    <span class="font-bold text-lime-300">Info:</span> Job available in GoK website, just google PSC jobs.
+                `.replace(/\s+/g, ' ').trim();
+
+                if (isClosestMatch) {
+                    conciseSummary += `<br><br><span class="font-bold text-yellow-300">These are closest that you can try.</span>`;
+                }
+
+                jobItem.innerHTML = `
+                    <h3 class="text-lg">${job.title}</h3>
+                    <p class="text-sm text-gray-600">${qualificationDisplay}</p>
+                    <div class="tooltip">
+                        ${conciseSummary}
+                    </div>
+                `;
+                jobListDiv.appendChild(jobItem);
+            });
+        }
+    </script>
+</body>
+</html>
