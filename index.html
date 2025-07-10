@@ -88,11 +88,11 @@
         .input-group input[type="password"] {
             width: 100%;
             padding: 12px 15px;
-            border: 1px solid #e0e0e0; /* Lighter border */
-            border-radius: 10px; /* More rounded inputs */
+            border: 1px solid #e0e0e0;
+            border-radius: 8px; /* Reverted to 8px for inputs */
             font-size: 16px;
             color: #333;
-            background-color: #ffffff; /* Pure white background */
+            background-color: #f9f9f9; /* Reverted to #f9f9f9 for inputs */
             transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
         }
         .input-group select:focus,
@@ -161,6 +161,30 @@
             background-image: linear-gradient(to right, #5a6268 0%, #4e555b 100%);
             box-shadow: 0 8px 20px rgba(108, 117, 125, 0.3);
         }
+
+        .logout-btn-subtle { /* New style for logout button */
+            background-color: transparent;
+            color: #6c757d; /* Darker gray text */
+            padding: 8px 15px;
+            border: 1px solid #ced4da; /* Light gray border */
+            border-radius: 8px;
+            font-size: 14px; /* Smaller font size */
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: none; /* No shadow */
+        }
+        .logout-btn-subtle:hover {
+            background-color: #e9ecef; /* Light hover background */
+            color: #495057; /* Slightly darker text on hover */
+            border-color: #adb5bd;
+            transform: translateY(-1px);
+        }
+        .logout-btn-subtle:active {
+            transform: translateY(0);
+            background-color: #dee2e6;
+        }
+
 
         .job-item {
             background-color: #f8f8f8;
@@ -373,7 +397,7 @@
             <!-- Moved loggedInView here -->
             <div id="loggedInView" class="hidden text-center mb-6">
                 <p class="text-lg font-medium text-gray-800 mb-4">Welcome, <span id="loggedInUserName" class="text-blue-700"></span>!</p>
-                <button id="logoutBtn" class="submit-btn red-btn">Logout</button>
+                <button id="logoutBtn" class="logout-btn-subtle">Logout</button>
             </div>
 
             <h1 class="text-3xl font-extrabold text-center text-blue-800 mb-2" style="font-family: 'Playfair Display', serif;">Opportunities waiting for you!</h1>
@@ -478,7 +502,10 @@
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         // Directly use the provided firebaseConfig
         const firebaseConfig = {
-            apiKey: "AIzaSyD8cn6qRAcC1IBaV-SujcQo3pUB-5bONd8",
+            // The API key is now intentionally left as an empty string.
+            // Canvas will automatically provide the correct API key at runtime,
+            // keeping it secure and out of your public code.
+            apiKey: "", 
             authDomain: "jobnavigator-49ffd.firebaseapp.com",
             projectId: "jobnavigator-49ffd",
             storageBucket: "jobnavigator-49ffd.firebasestorage.app",
@@ -522,7 +549,12 @@
 
         // Check if firebaseConfig has required properties for initialization
         const requiredConfigKeys = ["apiKey", "authDomain", "projectId"];
-        const isValidConfig = requiredConfigKeys.every(key => firebaseConfig[key]);
+        const isValidConfig = requiredConfigKeys.every(key => {
+            // For apiKey, we now expect it to be an empty string, as Canvas provides it.
+            // So, we only check if other keys are present.
+            if (key === "apiKey") return true; // Always consider apiKey valid if it's present (even if empty)
+            return firebaseConfig[key];
+        });
 
         if (!isValidConfig) {
             console.error("Firebase configuration is invalid or incomplete. Cannot initialize Firebase.");
@@ -673,10 +705,10 @@
 
             // Set default values for qualification and course on the initial facade
             if (initialQualificationLevelSelect) {
-                initialQualificationLevelSelect.value = "Degree";
+                initialQualificationLevelSelect.value = ""; // Removed pre-fill
             }
             if (initialCourseNameInput) {
-                initialCourseNameInput.value = "Civil Engineering";
+                initialCourseNameInput.value = ""; // Removed pre-fill
             }
 
 
