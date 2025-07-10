@@ -1569,6 +1569,13 @@
                     // Prevent click from propagating to the body listener immediately
                     event.stopPropagation();
 
+                    // Close any other open tooltips first
+                    document.querySelectorAll('.job-item.active-tooltip').forEach(item => {
+                        if (item !== jobItem) { // Don't close the current one if it's already open
+                            item.classList.remove('active-tooltip');
+                        }
+                    });
+
                     // Toggle the 'active-tooltip' class on the clicked job item
                     // This will now close it if it's already open, or open it if it's closed.
                     jobItem.classList.toggle('active-tooltip');
