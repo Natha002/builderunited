@@ -909,6 +909,11 @@
                     closeAllTooltips();
                 }
             });
+
+            // Global scroll listener to close tooltips when scrolling
+            window.addEventListener('scroll', function() {
+                closeAllTooltips();
+            });
         });
 
 
