@@ -893,6 +893,20 @@
             if (goHomeBtnReal) goHomeBtnReal.addEventListener('click', () => {
                 window.location.href = "https://sites.google.com/d/1d-yfXv38ngv2G48bn9-cW35WulOmJJX3/p/1CL9vI1Uc9Gqs3iP1Uf8TLcDP7imaLH9H/edit";
             });
+
+            // Global click listener to close tooltips when clicking outside
+            document.addEventListener('click', function(event) {
+                // Get all currently active tooltips
+                const activeJobItems = document.querySelectorAll('.job-item.active-tooltip');
+
+                activeJobItems.forEach(item => {
+                    // Check if the clicked element is NOT inside the current active job item
+                    // and NOT the job item itself
+                    if (!item.contains(event.target) && !item.isSameNode(event.target)) {
+                        item.classList.remove('active-tooltip');
+                    }
+                });
+            });
         });
 
 
@@ -1555,14 +1569,8 @@
                     // Prevent click from propagating to the body listener immediately
                     event.stopPropagation();
 
-                    // Close any other open tooltips first
-                    document.querySelectorAll('.job-item.active-tooltip').forEach(item => {
-                        if (item !== jobItem) { // Don't close the current one if it's already open
-                            item.classList.remove('active-tooltip');
-                        }
-                    });
-
                     // Toggle the 'active-tooltip' class on the clicked job item
+                    // This will now close it if it's already open, or open it if it's closed.
                     jobItem.classList.toggle('active-tooltip');
                 });
             });
