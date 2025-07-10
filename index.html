@@ -9,6 +9,35 @@
     <!-- Google Fonts for Playfair Display -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* Keyframe Animations */
+        @keyframes pulseBackground {
+            0% { background-color: #f0f2f5; }
+            50% { background-color: #e8ebef; }
+            100% { background-color: #f0f2f5; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f0f2f5; /* Light gray background */
@@ -16,6 +45,7 @@
             padding: 20px;
             box-sizing: border-box;
             overflow-y: auto; /* Allow vertical scrolling */
+            animation: pulseBackground 15s infinite ease-in-out; /* Subtle background animation */
         }
 
         .card {
@@ -30,6 +60,8 @@
             transition: all 0.3s ease-in-out;
             position: relative;
             z-index: 1;
+            animation: fadeInUp 0.8s ease-out forwards; /* Card entrance animation */
+            opacity: 0; /* Start hidden for animation */
         }
         /* Responsive width for the card */
         @media (min-width: 768px) { /* Medium screens and up */
@@ -59,13 +91,13 @@
             font-size: 16px;
             color: #333;
             background-color: #f9f9f9;
-            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Smoother transition */
         }
         .input-group select:focus,
         .input-group input[type="text"]:focus {
             outline: none;
             border-color: #007aff;
-            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.3); /* More prominent shadow on focus */
         }
         .submit-btn {
             background-color: #007aff;
@@ -81,11 +113,11 @@
         .submit-btn:hover {
             background-color: #005bb5;
             transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3);
+            box-shadow: 0 6px 15px rgba(0, 122, 255, 0.4); /* Enhanced hover shadow */
         }
         .submit-btn:active {
-            transform: translateY(0);
-            box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3);
+            transform: translateY(2px); /* More pronounced press effect */
+            box-shadow: 0 2px 5px rgba(0, 122, 255, 0.2); /* Reduced shadow on press */
         }
         .job-item {
             background-color: #f8f8f8;
@@ -96,6 +128,10 @@
             cursor: pointer;
             transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
             position: relative; /* For tooltip positioning */
+            opacity: 0; /* Start hidden for JS animation */
+        }
+        .job-item.fade-in-slide-up {
+            animation: fadeInSlideUp 0.5s ease-out forwards; /* Applied by JS with delay */
         }
         .job-item:hover {
             background-color: #eef7ff;
@@ -154,11 +190,12 @@
             transition: opacity 0.3s ease-in-out, transform 0.2s ease-in-out, color 0.2s ease-in-out, text-shadow 0.2s ease-in-out;
         }
 
-        .job-item:hover .info-hint {
+        .job-item:hover .info-hint,
+        .job-item.active-tooltip .info-hint { /* Apply hover effect on active state too */
             opacity: 1; /* Fully visible on hover */
-            transform: scale(1.05); /* Slightly larger */
+            transform: scale(1.1); /* More pronounced scale */
             color: #0000CD; /* Slightly lighter deep blue on hover for subtle change */
-            text-shadow: 0 0 8px rgba(255, 255, 0, 0.9), 0 0 15px rgba(255, 255, 0, 0.7); /* More pronounced yellow shine */
+            text-shadow: 0 0 10px rgba(255, 255, 0, 0.9), 0 0 20px rgba(255, 255, 0, 0.7); /* More pronounced yellow shine */
         }
 
         /* Responsive adjustments for tooltip */
@@ -236,7 +273,7 @@
                 posts: "7 vacancies",
                 salaryMax: 57230,
                 allowanceMax: 16500 + 5000,
-                experienceReq: "No experience required (Graduate Engineer)",
+                experienceReq: "Entry Level (Requires Bachelor's Degree in Engineering)",
                 deadline: "8/7/2025",
             },
             {
@@ -296,7 +333,7 @@
                 posts: "2 vacancies",
                 salaryMax: 57230,
                 allowanceMax: 16500 + 5000,
-                experienceReq: "No experience required (Graduate Engineer)",
+                experienceReq: "Entry Level (Requires Bachelor's Degree)",
                 deadline: "8/7/2025",
             },
             {
@@ -346,7 +383,7 @@
                 posts: "1 vacancy",
                 salaryMax: 37100,
                 allowanceMax: 6750 + 4000,
-                experienceReq: "Requires Diploma or equivalent qualification (Entry Level)",
+                experienceReq: "Entry Level (Requires Diploma or equivalent qualification)",
                 deadline: "8/7/2025",
             },
             {
@@ -416,7 +453,7 @@
                 posts: "16 vacancies",
                 salaryMax: 65860,
                 allowanceMax: 28000 + 6000,
-                experienceReq: "No experience required (Graduate Membership)",
+                experienceReq: "Entry Level (Requires Graduate Membership)",
                 deadline: "8/7/2025",
             },
             {
@@ -426,7 +463,7 @@
                 posts: "5 vacancies",
                 salaryMax: 57230,
                 allowanceMax: 16500 + 5000,
-                experienceReq: "No experience required (Graduate Membership)",
+                experienceReq: "Entry Level (Requires Graduate Membership)",
                 deadline: "8/7/2025",
             },
             {
@@ -456,7 +493,7 @@
                 posts: "28 vacancies",
                 salaryMax: 57230,
                 allowanceMax: 16500 + 5000,
-                experienceReq: "No experience required (Graduate Engineer)",
+                experienceReq: "Entry Level (Requires Bachelor's Degree in Engineering)",
                 deadline: "8/7/2025",
             },
             {
@@ -486,7 +523,7 @@
                 posts: "25 vacancies",
                 salaryMax: 57230,
                 allowanceMax: 16500 + 5000,
-                experienceReq: "No experience required (Graduate Engineer)",
+                experienceReq: "Entry Level (Requires Bachelor's Degree in Engineering)",
                 deadline: "8/7/2025",
             },
             {
@@ -506,7 +543,7 @@
                 posts: "4 vacancies",
                 salaryMax: 57230,
                 allowanceMax: 16500 + 5000,
-                experienceReq: "No experience required (Graduate Engineer)",
+                experienceReq: "Entry Level (Requires Bachelor's Degree in Engineering)",
                 deadline: "8/7/2025",
             },
             {
@@ -526,7 +563,7 @@
                 posts: "27 vacancies",
                 salaryMax: 57230,
                 allowanceMax: 16500 + 5000,
-                experienceReq: "No experience required (Graduate Membership)",
+                experienceReq: "Entry Level (Requires Graduate Membership)",
                 deadline: "8/7/2025",
             },
             {
@@ -546,7 +583,7 @@
                 posts: "28 vacancies",
                 salaryMax: 57230,
                 allowanceMax: 16500 + 5000,
-                experienceReq: "No experience required (Graduate Engineer)",
+                experienceReq: "Entry Level (Requires Bachelor's Degree in Engineering)",
                 deadline: "8/7/2025",
             },
             {
@@ -566,7 +603,7 @@
                 posts: "12 vacancies",
                 salaryMax: 57230,
                 allowanceMax: 16500 + 5000,
-                experienceReq: "No experience required (Registered with Association)",
+                experienceReq: "Entry Level (Requires Association Registration)",
                 deadline: "8/7/2025",
             },
             {
@@ -626,7 +663,7 @@
                 posts: "7 vacancies",
                 salaryMax: 57230,
                 allowanceMax: 16500 + 5000,
-                experienceReq: "No experience required (Graduate Engineer)",
+                experienceReq: "Entry Level (Requires Bachelor's Degree in Engineering)",
                 deadline: "8/7/2025",
             },
             {
@@ -636,7 +673,7 @@
                 posts: "14 vacancies",
                 salaryMax: 57230,
                 allowanceMax: 16500 + 5000,
-                experienceReq: "No experience required (Graduate)",
+                experienceReq: "Entry Level (Requires Bachelor's Degree)",
                 deadline: "8/7/2025",
             },
             {
@@ -676,7 +713,7 @@
                 posts: "5 vacancies",
                 salaryMax: 133410,
                 allowanceMax: 45000 + 12000,
-                experienceReq: "Experience required (Training of trainers Certificate)",
+                experienceReq: "Experience required (Training of Trainers Certificate)",
                 deadline: "8/7/2025",
             },
             {
@@ -843,9 +880,13 @@
                 "LAND ADMINISTRATION ASSISTANT III"
             ];
 
-            jobs.forEach(job => {
+            jobs.forEach((job, index) => {
                 const jobItem = document.createElement('div');
                 jobItem.className = 'job-item';
+                // Apply animation with a staggered delay
+                jobItem.style.animationDelay = `${index * 0.1}s`;
+                jobItem.classList.add('fade-in-slide-up');
+
 
                 let postsFormatted = '';
                 if (job.posts !== "Not specified" && job.posts !== "Multiple vacancies") {
