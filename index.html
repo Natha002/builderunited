@@ -333,7 +333,7 @@
                     <input type="text" id="initialCourseName" placeholder="e.g., Civil Engineering, Architecture, Quantity Surveying">
                 </div>
 
-                <button id="initialFindJobsBtn" class="submit-btn w-full">Find Jobs</button>
+                <button id="initialFindJobsBtn" class="submit-btn w-full">Job Matches For You</button>
             </div>
 
             <!-- New Contact and Movement Section for Facade Page -->
@@ -425,7 +425,7 @@
             </div>
 
             <div id="results" class="mt-8">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4" style="font-family: 'Playfair Display', serif;">You can apply for these jobs:</h2>
+                <h2 class="text-xl font-semibold text-gray-700 mb-4" style="font-family: 'Playfair Display', serif;">If missed the deadline, <a href="https://sites.google.com/d/1d-yfXv38ngv2G48bn9-cW35WulOmJJX3/p/1CL9vI1Uc9Gqs3iP1Uf8TLcDP7imaLH9H/edit" target="_blank" class="text-blue-600 hover:underline">Join</a> us for future job updates! Click details for more info</h2>
                 <div id="jobList" class="space-y-4">
                     <!-- Job results will be loaded here -->
                 </div>
@@ -879,7 +879,7 @@
                     findJobs(); // Call the actual job finding function
                 } finally {
                     // Hide loading state
-                    realFindJobsBtn.textContent = 'Find Jobs';
+                    realFindJobsBtn.textContent = 'Job Matches For You';
                     realFindJobsBtn.disabled = false;
                 }
             });
@@ -1528,7 +1528,7 @@
                     <span class="font-bold text-lime-300">Allowance:</span> upto Ksh ${job.allowanceMax.toLocaleString()} pm,
                     <span class="font-bold text-lime-300">Experience:</span> ${job.experienceReq},
                     <span class="font-bold text-lime-300">Deadline:</span> ${job.deadline},
-                    <span class="font-bold text-lime-300">Info:</span> Job available in GoK website, just google PSC jobs.
+                    <span class="font-bold text-lime-300">Info:</span> Job available in GoK website, just google <a href="https://www.psckjobs.go.ke/loginPage.aspx" target="_blank" class="text-blue-400 hover:underline">PSC</a> jobs.
                 `.replace(/\s+/g, ' ').trim();
 
                 if (isClosestMatch) {
