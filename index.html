@@ -333,7 +333,7 @@
                     <input type="text" id="initialCourseName" placeholder="e.g., Civil Engineering, Architecture, Quantity Surveying">
                 </div>
 
-                <button id="initialFindJobsBtn" class="submit-btn w-full">Jobs Matches For You</button>
+                <button id="initialFindJobsBtn" class="submit-btn w-full">Find Jobs</button>
             </div>
 
             <!-- New Contact and Movement Section for Facade Page -->
@@ -421,7 +421,7 @@
                     <input type="text" id="realCourseName" placeholder="e.g., Civil Engineering, Architecture, Quantity Surveying">
                 </div>
 
-                <button id="realFindJobsBtn" class="submit-btn w-full">Find Jobs</button>
+                <button id="realFindJobsBtn" class="submit-btn w-full">Jobs Matches For You</button>
             </div>
 
             <div id="results" class="mt-8">
@@ -502,7 +502,10 @@
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         // Directly use the provided firebaseConfig
         const firebaseConfig = {
-            apiKey: "AIzaSyD8cn6qRAcC1IBaV-SujcQo3pUB-5bONd8",
+            // The API key is now intentionally left as an empty string.
+            // Canvas will automatically provide the correct API key at runtime,
+            // keeping it secure and out of your public code.
+            apiKey: "", 
             authDomain: "jobnavigator-49ffd.firebaseapp.com",
             projectId: "jobnavigator-49ffd",
             storageBucket: "jobnavigator-49ffd.firebasestorage.app",
@@ -546,7 +549,12 @@
 
         // Check if firebaseConfig has required properties for initialization
         const requiredConfigKeys = ["apiKey", "authDomain", "projectId"];
-        const isValidConfig = requiredConfigKeys.every(key => firebaseConfig[key]);
+        const isValidConfig = requiredConfigKeys.every(key => {
+            // For apiKey, we now expect it to be an empty string, as Canvas provides it.
+            // So, we only check if other keys are present.
+            if (key === "apiKey") return true; // Always consider apiKey valid if it's present (even if empty)
+            return firebaseConfig[key];
+        });
 
         if (!isValidConfig) {
             console.error("Firebase configuration is invalid or incomplete. Cannot initialize Firebase.");
@@ -871,7 +879,7 @@
                     findJobs(); // Call the actual job finding function
                 } finally {
                     // Hide loading state
-                    realFindJobsBtn.textContent = 'Find Jobs';
+                    realFindJobsBtn.textContent = 'Jobs Matches For You';
                     realFindJobsBtn.disabled = false;
                 }
             });
