@@ -85,7 +85,8 @@
         .input-group select,
         .input-group input[type="text"],
         .input-group input[type="email"],
-        .input-group input[type="password"] {
+        .input-group input[type="password"],
+        .input-group textarea { /* Added textarea */
             width: 100%;
             padding: 12px 15px;
             border: 1px solid #e0e0e0;
@@ -98,7 +99,8 @@
         .input-group select:focus,
         .input-group input[type="text"]:focus,
         .input-group input[type="email"]:focus,
-        .input-group input[type="password"]:focus {
+        .input-group input[type="password"]:focus,
+        .input-group textarea:focus { /* Added textarea */
             outline: none;
             border-color: #007aff;
             box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2); /* Softer focus shadow */
@@ -306,6 +308,24 @@
             opacity: 1;
             visibility: visible;
         }
+
+        /* Loading Spinner CSS */
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #007aff;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -422,14 +442,55 @@
                 </div>
 
                 <button id="realFindJobsBtn" class="submit-btn w-full">Job Matches For You</button>
+                <div id="loadingIndicator" class="text-center mt-4 text-gray-700 hidden" aria-live="polite">
+                    <span class="loading-spinner"></span> Generating matches...
+                </div>
+                <div id="errorMessage" class="text-center mt-4 text-red-600 hidden" aria-live="assertive">
+                    An error occurred. Please try again.
+                </div>
             </div>
 
             <div id="results" class="mt-8">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4" style="font-family: 'Playfair Display', serif;">If missed the deadline, <a href="https://sites.google.com/d/1d-yfXv38ngv2G48bn9-cW35WulOmJJX3/p/1CL9vI1Uc9Gqs3iP1Uf8TLcDP7imaLH9H/edit" target="_blank" class="text-blue-600 hover:underline">Join</a> us for future job updates! Click details for more info</h2>
+                <h2 class="text-xl font-semibold text-gray-700 mb-4" style="font-family: 'Playfair Display', serif;">If missed the deadline, <a href="https://www.psckjobs.go.ke/loginPage.aspx" target="_blank" class="text-blue-600 hover:underline">Join</a> us for future job updates! Click details for more info</h2>
                 <div id="jobList" class="space-y-4">
                     <!-- Job results will be loaded here -->
+                    <p class="text-gray-500 text-center" id="noResultsMessage">No matches found yet. Enter your specialty above!</p>
                 </div>
             </div>
+
+            <!-- New Section: AI-Powered Application Assistance -->
+            <section id="applicationAssistanceSection" class="hidden mt-10 p-6 bg-gray-50 rounded-lg shadow-inner">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4" style="font-family: 'Playfair Display', serif;">AI-Powered Application Accelerator</h2>
+                <p class="text-gray-600 mb-4">Select an opportunity and paste your CV to get a tailored cover letter and resume suggestions!</p>
+
+                <label for="selectOpportunity" class="block text-gray-700 text-sm font-medium mb-2">
+                    Select Opportunity to Apply For:
+                </label>
+                <select id="selectOpportunity" class="w-full mb-4">
+                    <option value="">-- Select an opportunity --</option>
+                    <!-- Options will be dynamically populated -->
+                </select>
+
+                <label for="userResume" class="block text-gray-700 text-sm font-medium mb-2">
+                    Paste Your Resume/CV Here:
+                </label>
+                <textarea id="userResume" rows="8" class="w-full resize-y mb-4" placeholder="Paste your full resume or CV text here..."></textarea>
+
+                <button id="generateApplicationBtn" class="submit-btn purple-btn w-full flex items-center justify-center">
+                    Generate Tailored Application Materials
+                </button>
+                <div id="applicationLoadingIndicator" class="text-center mt-4 text-gray-700 hidden" aria-live="polite">
+                    <span class="loading-spinner"></span> Generating application materials...
+                </div>
+                <div id="applicationErrorMessage" class="text-center mt-4 text-red-600 hidden" aria-live="assertive">
+                    An error occurred during application generation. Please try again.
+                </div>
+
+                <div id="applicationOutput" class="mt-6 space-y-4">
+                    <!-- AI-generated application materials will be inserted here -->
+                </div>
+            </section>
+
 
             <!-- New Contact and Movement Section -->
             <div class="mt-10 text-center text-gray-700">
@@ -494,7 +555,8 @@
             doc,
             setDoc,
             collection,
-            getDocs
+            getDocs,
+            getDoc
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- Firebase Initialization ---
@@ -525,6 +587,33 @@
         let storedQualificationLevel = '';
         let storedCourseName = '';
 
+        // --- Company List (Your Valuable Asset!) ---
+        const roadConstructionCompanies = [
+            "Safaricom Investment Co-operative (S.I.C.)",
+            "Aga Khan Education Service, Kenya (AKESK)", // Assuming they do construction projects for their schools
+            "CURE International", // Assuming they do building/construction maintenance
+            "National Construction Authority", // Regulator, but good to know for context/compliance
+            "Kenya Airports Authority",
+            "Tatu City Limited",
+            "Safer Power Ltd",
+            "Q-Sourcing Servtec Group",
+            "Silver-Dean Ltd",
+            "Magnate Ventures",
+            "County Government of Kakamega", // Government entity, often issues tenders
+            // Add more companies from your list here!
+            "H. Young & Co. (E.A.) Ltd.",
+            "China Road and Bridge Corporation (CRBC) Kenya",
+            "Strabag International GmbH",
+            "CMC Motors Group Ltd (Construction Equipment Division)",
+            "Intex Construction Ltd.",
+            "SS Mehta & Sons Ltd.",
+            "Associated Construction Co. Ltd. (ACC)",
+            "Seyani Brothers & Co. Ltd.",
+            "Epco Builders Ltd.",
+            "Laxmanbhai Construction Ltd."
+        ];
+
+
         // Function to display messages to the user
         function showMessage(message, isError = false) {
             const messageBox = document.getElementById('messageBox');
@@ -545,30 +634,32 @@
                     page.style.display = (id === pageId) ? 'block' : 'none';
                 }
             });
+            // Ensure card animation is re-applied when page changes
+            const card = document.querySelector('.card');
+            if (card) {
+                card.style.opacity = 0; // Reset opacity for animation
+                card.style.transform = 'translateY(20px)'; // Reset transform for animation
+                setTimeout(() => {
+                    card.style.opacity = 1;
+                    card.style.transform = 'translateY(0)';
+                }, 50); // Small delay to ensure reset takes effect before re-applying
+            }
         }
 
-        // Check if firebaseConfig has required properties for initialization
+        // Initialize Firebase
         const requiredConfigKeys = ["apiKey", "authDomain", "projectId"];
-        const isValidConfig = requiredConfigKeys.every(key => {
-            // For apiKey, we now expect it to be an empty string, as Canvas provides it.
-            // So, we only check if other keys are present.
-            if (key === "apiKey") return true; // Always consider apiKey valid if it's present (even if empty)
-            return firebaseConfig[key];
-        });
+        const isValidConfig = requiredConfigKeys.every(key => firebaseConfig[key]);
 
         if (!isValidConfig) {
             console.error("Firebase configuration is invalid or incomplete. Cannot initialize Firebase.");
             showMessage("Application setup incomplete. Please ensure Firebase configuration is provided.", true);
-            // Disable relevant UI elements if initialization fails
-            document.getElementById('initialFindJobsBtn').disabled = true; // Disable on facade
-            // The auth forms and real jobs page are initially hidden anyway, so no need to disable their elements directly here.
-            // They will be handled by showPage logic.
+            if (document.getElementById('initialFindJobsBtn')) document.getElementById('initialFindJobsBtn').disabled = true;
         } else {
             try {
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
-                firebaseInitialized = true; // Set flag to true on success
+                firebaseInitialized = true;
                 console.log("Firebase initialized successfully.");
 
                 const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
@@ -576,29 +667,35 @@
                 onAuthStateChanged(auth, async (user) => {
                     const authStatus = document.getElementById('authStatus');
                     const loggedInUserName = document.getElementById('loggedInUserName');
-                    const loggedInView = document.getElementById('loggedInView'); // Get the loggedInView
+                    const loggedInView = document.getElementById('loggedInView');
 
                     if (user) {
                         userId = user.uid;
                         authStatus.textContent = `Logged in as: ${user.email}`;
                         loggedInUserName.textContent = user.displayName || user.email;
-                        loggedInView.style.display = 'block'; // Show loggedInView
+                        loggedInView.classList.remove('hidden'); // Show loggedInView
                         console.log("User logged in:", user.uid);
-                        console.log("Current userId:", userId);
+                        
+                        // Try to load user profile from Firestore
+                        if (db) {
+                            const userDocRef = doc(db, `artifacts/${appId}/public/data/registered_users`, userId);
+                            const userDocSnap = await getDoc(userDocRef);
+                            if (userDocSnap.exists()) {
+                                const userData = userDocSnap.data();
+                                storedQualificationLevel = userData.qualificationLevel || '';
+                                storedCourseName = userData.courseName || '';
+                                console.log("User profile loaded:", userData);
+                            }
+                        }
 
-                        // If user is logged in, show the real jobs page
                         showPage('realJobsPage');
-                        // Pre-fill the real jobs page inputs if data was stored from facade
                         if (realQualificationLevelSelect) realQualificationLevelSelect.value = storedQualificationLevel;
                         if (realCourseNameInput) realCourseNameInput.value = storedCourseName;
 
                     } else {
-                        // User is not logged in. Show the initial facade page.
                         userId = null;
-                        // Update authStatus message for not logged in state
                         if (authStatus) {
                             authStatus.innerHTML = `First time here? <button id="authStatusSignupLink" class="text-blue-600 hover:underline font-medium">Sign up</button> first. If not proceed.`;
-                            // Re-attach event listener for the dynamically created button
                             const authStatusSignupLink = document.getElementById('authStatusSignupLink');
                             if (authStatusSignupLink) {
                                 authStatusSignupLink.addEventListener('click', () => {
@@ -607,12 +704,9 @@
                                 });
                             }
                         }
-                        if (loggedInView) loggedInView.style.display = 'none'; // Hide loggedInView
-                        console.log("User logged out.");
-                        // Always show the initial facade page if not logged in
+                        if (loggedInView) loggedInView.classList.add('hidden'); // Hide loggedInView
                         showPage('initialFacadePage');
 
-                        // If there's an initialAuthToken, try to sign in with it, but don't force page change on failure
                         if (firebaseInitialized && auth && initialAuthToken) {
                             try {
                                 await signInWithCustomToken(auth, initialAuthToken);
@@ -624,7 +718,6 @@
                                 } else {
                                     showMessage(`Authentication failed: ${error.message}.`, true);
                                 }
-                                // User remains on initialFacadePage, can click "Find Jobs" to go to authPage
                             }
                         }
                     }
@@ -634,7 +727,6 @@
                 console.error("Firebase initialization failed:", firebaseError);
                 showMessage("Failed to initialize the application. Please try again later.", true);
                 if (document.getElementById('initialFindJobsBtn')) document.getElementById('initialFindJobsBtn').disabled = true;
-                // Display a message on the facade page itself if Firebase init fails
                 const initialFacadePage = document.getElementById('initialFacadePage');
                 if (initialFacadePage) {
                     initialFacadePage.innerHTML = '<p class="text-red-500 text-center">Application initialization failed. Please contact support.</p>';
@@ -669,6 +761,17 @@
         let goHomeBtnFacade; // New Go Home button for facade
         let goHomeBtnReal; // New Go Home button for real jobs page
 
+        // Application Assistance Elements
+        let applicationAssistanceSection;
+        let selectOpportunity;
+        let userResumeInput;
+        let generateApplicationBtn;
+        let applicationLoadingIndicator;
+        let applicationErrorMessage;
+        let applicationOutput;
+
+        let currentMatches = []; // Store matches for application assistance
+
 
         document.addEventListener('DOMContentLoaded', () => {
             // Assign DOM elements for Initial Facade Page
@@ -701,6 +804,15 @@
             realFindJobsBtn = document.getElementById('realFindJobsBtn');
             jobListDiv = document.getElementById('jobList');
             goHomeBtnReal = document.getElementById('goHomeBtnReal'); // Get new Go Home button for real jobs page
+
+            // Assign DOM elements for Application Assistance Section
+            applicationAssistanceSection = document.getElementById('applicationAssistanceSection');
+            selectOpportunity = document.getElementById('selectOpportunity');
+            userResumeInput = document.getElementById('userResume');
+            generateApplicationBtn = document.getElementById('generateApplicationBtn');
+            applicationLoadingIndicator = document.getElementById('applicationLoadingIndicator');
+            applicationErrorMessage = document.getElementById('applicationErrorMessage');
+            applicationOutput = document.getElementById('applicationOutput');
 
 
             // Set default values for qualification and course on the initial facade
@@ -873,13 +985,13 @@
             // Real Jobs Page "Find Jobs" button (this one actually finds jobs)
             if (realFindJobsBtn) realFindJobsBtn.addEventListener('click', () => {
                 // Show loading state
-                realFindJobsBtn.textContent = 'Finding Jobs...';
+                document.getElementById('loadingIndicator').classList.remove('hidden');
+                document.getElementById('errorMessage').classList.add('hidden');
                 realFindJobsBtn.disabled = true;
                 try {
                     findJobs(); // Call the actual job finding function
                 } finally {
-                    // Hide loading state
-                    realFindJobsBtn.textContent = 'Job Matches For You';
+                    // Hide loading state is handled inside displayJobs or if no jobs found
                     realFindJobsBtn.disabled = false;
                 }
             });
@@ -893,6 +1005,9 @@
             if (goHomeBtnReal) goHomeBtnReal.addEventListener('click', () => {
                 window.location.href = "https://sites.google.com/d/1d-yfXv38ngv2G48bn9-cW35WulOmJJX3/p/1CL9vI1Uc9Gqs3iP1Uf8TLcDP7imaLH9H/edit";
             });
+
+            // Application Assistance: Generate button
+            if (generateApplicationBtn) generateApplicationBtn.addEventListener('click', generateApplication);
 
             // Function to close all active tooltips
             function closeAllTooltips() {
@@ -1423,10 +1538,6 @@
             return costs[s2.length];
         }
 
-        // --- Firebase Data Fetching and Display ---
-        // Removed listenForRegisteredUsers and fetchAndDisplayRegisteredUsers
-        // as the admin view and its associated functionality are removed.
-
         // --- Main Logic ---
         function findJobs() {
             // Use the inputs from the real jobs page
@@ -1434,9 +1545,13 @@
             let enteredCourse = realCourseNameInput.value.trim().toLowerCase();
 
             jobListDiv.innerHTML = ''; // Clear previous results
+            applicationAssistanceSection.classList.add('hidden'); // Hide assistance section initially
+            selectOpportunity.innerHTML = '<option value="">-- Select an opportunity --</option>'; // Clear dropdown
+            currentMatches = []; // Clear current matches
 
             if (!selectedLevel || !enteredCourse) {
                 jobListDiv.innerHTML = '<p class="text-red-500 text-center">Please select a qualification level and enter your course name.</p>';
+                document.getElementById('loadingIndicator').classList.add('hidden');
                 return;
             }
 
@@ -1466,6 +1581,9 @@
 
             if (primaryMatchingJobs.length > 0) {
                 displayJobs(primaryMatchingJobs, false);
+                currentMatches = primaryMatchingJobs; // Store for application assistance
+                populateOpportunityDropdown(primaryMatchingJobs);
+                applicationAssistanceSection.classList.remove('hidden'); // Show assistance section
             } else {
                 const closestJobs = [];
                 jobData.forEach(job => {
@@ -1486,9 +1604,114 @@
 
                 if (closestJobs.length > 0) {
                     displayJobs(closestJobs, true);
+                    currentMatches = closestJobs; // Store for application assistance
+                    populateOpportunityDropdown(closestJobs);
+                    applicationAssistanceSection.classList.remove('hidden'); // Show assistance section
                 } else {
                     jobListDiv.innerHTML = '<p class="text-gray-500 text-center">No jobs found for your criteria. Try a different course or qualification level.</p>';
+                    document.getElementById('loadingIndicator').classList.add('hidden');
                 }
+            }
+        }
+
+        function populateOpportunityDropdown(jobs) {
+            selectOpportunity.innerHTML = '<option value="">-- Select an opportunity --</option>';
+            jobs.forEach((job, index) => {
+                const option = document.createElement('option');
+                option.value = index; // Use index to easily retrieve the job object later
+                option.textContent = job.title;
+                selectOpportunity.appendChild(option);
+            });
+        }
+
+        async function generateApplication() {
+            const selectedJobIndex = selectOpportunity.value;
+            const userResumeText = userResumeInput.value.trim();
+
+            if (selectedJobIndex === "" || !userResumeText) {
+                showMessage("Please select an opportunity and paste your resume to generate application materials.", true);
+                return;
+            }
+
+            const selectedJob = currentMatches[parseInt(selectedJobIndex)];
+
+            if (!selectedJob) {
+                showMessage("Selected opportunity not found.", true);
+                return;
+            }
+
+            applicationLoadingIndicator.classList.remove('hidden');
+            applicationErrorMessage.classList.add('hidden');
+            applicationOutput.innerHTML = ''; // Clear previous output
+            generateApplicationBtn.disabled = true;
+
+            const prompt = `
+                You are an expert career advisor specializing in the construction industry.
+                Your task is to generate a tailored cover letter and provide resume improvement suggestions for a job application.
+
+                Here is the job opportunity details:
+                Job Title: ${selectedJob.title}
+                Qualification Levels: ${selectedJob.levels.join(', ')}
+                Relevant Courses: ${selectedJob.courses.join(', ')}
+                Posts: ${selectedJob.posts}
+                Salary (Max): Kshs. ${selectedJob.salaryMax.toLocaleString()} per month
+                Allowance (Max): Kshs. ${selectedJob.allowanceMax.toLocaleString()} per month
+                Experience Required: ${selectedJob.experienceReq}
+                Application Deadline: ${selectedJob.deadline}
+
+                Here is the user's resume/CV:
+                ${userResumeText}
+
+                Please provide two sections:
+                1.  **Tailored Cover Letter:** Write a professional and compelling cover letter for the selected job opportunity. Address it generally (e.g., "Hiring Manager" or "Recruiting Team"). Highlight how the user's resume aligns with the job requirements, using keywords from the job description. Keep it concise and impactful.
+                2.  **Resume Improvement Suggestions:** Based on the job description and the provided resume, suggest specific improvements to the user's resume to make it more relevant and impactful for this particular job. Focus on keywords, achievements, and formatting.
+
+                Format your response clearly with headings for each section.
+            `;
+
+            try {
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // Canvas will provide this at runtime
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`API error: ${response.status} ${response.statusText} - ${errorData.error.message}`);
+                }
+
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const generatedText = result.candidates[0].content.parts[0].text;
+                    applicationOutput.innerHTML = `
+                        <div class="bg-white p-5 rounded-lg shadow-md mb-4">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-3">Generated Cover Letter & Resume Suggestions</h3>
+                            <div class="prose max-w-none">
+                                ${generatedText.replace(/\n/g, '<br>')}
+                            </div>
+                        </div>
+                    `;
+                    showMessage("Application materials generated successfully!");
+                } else {
+                    throw new Error("No content generated by the AI model.");
+                }
+            } catch (error) {
+                console.error("Error generating application materials:", error);
+                applicationErrorMessage.classList.remove('hidden');
+                applicationErrorMessage.textContent = `Error: ${error.message}. Please try again.`;
+                showMessage("Failed to generate application materials.", true);
+            } finally {
+                applicationLoadingIndicator.classList.add('hidden');
+                generateApplicationBtn.disabled = false;
             }
         }
 
@@ -1502,6 +1725,8 @@
         function displayJobs(jobs, isClosestMatch) {
             if (jobs.length === 0) {
                 jobListDiv.innerHTML = '<p class="text-gray-500 text-center">No jobs found for your criteria. Try a different course or qualification level.</p>';
+                document.getElementById('loadingIndicator').classList.add('hidden');
+                applicationAssistanceSection.classList.add('hidden'); // Hide assistance if no jobs
                 return;
             }
 
@@ -1594,6 +1819,7 @@
                     // This ensures that clicking an open tooltip closes it.
                 });
             });
+            document.getElementById('loadingIndicator').classList.add('hidden'); // Hide loading after jobs are displayed
         }
     </script>
 </body>
